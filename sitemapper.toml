@@ -2,7 +2,7 @@
 output_dir = "./sitemaps"
 max_urls_per_file = 50000
 compress = true
-base_url = "https://example.com"
+base_url = "https://katalog.review.arthistoricum.net"
 
 [processing]
 parallel_workers = 4
@@ -10,20 +10,20 @@ log_level = "INFO"
 
 [[cores]]
 name = "main_catalog"
-url = "http://solr1:8983/solr/catalog"
+url = "http://sdvdmgtestsolr01.slub-dresden.de:8984/solr/ahn-release"
 id_field = "id"
 date_field = "last_indexed"
-url_pattern = "https://catalog.example.com/record/{id}"
+url_pattern = "https://katalog.review.arthistoricum.net/id/{id}"
 changefreq = "weekly"
 batch_size = 1000
 timeout = 30
 
 [[cores]]
 name = "archive_catalog"
-url = "http://solr2:8983/solr/archive"
-id_field = "record_id"
-date_field = "modified_date"
-url_pattern = "https://archive.example.com/item/{id}"
+url = "http://sdvdmgtestsolr01.slub-dresden.de:8984/solr/ahn-images-test-1"
+id_field = "id"
+date_field = "last_indexed"
+url_pattern = "https://katalog.review.arthistoricum.net/id/{id}"
 changefreq = "monthly"
 batch_size = 2000
-timeout = 45
+timeout = 30

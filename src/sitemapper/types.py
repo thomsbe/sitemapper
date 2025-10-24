@@ -111,11 +111,13 @@ class AppConfig:
         sitemap: Sitemap generation configuration
         parallel_workers: Number of parallel workers for processing
         log_level: Logging level for the application
+        test_mode: If True, limits processing to 10 documents per core for testing
     """
     cores: List[SolrCoreConfig]
     sitemap: SitemapConfig
     parallel_workers: int = 4
     log_level: str = LogLevel.INFO
+    test_mode: bool = False
 
 
 @dataclass

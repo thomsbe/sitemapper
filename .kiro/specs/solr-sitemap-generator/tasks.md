@@ -6,24 +6,24 @@
   - Define base exception classes and type hints
   - _Requirements: 6.2, 6.4, 6.5_
 
-- [ ] 2. Implement configuration management system
-  - [ ] 2.1 Create TOML configuration parser and data models
+- [x] 2. Implement configuration management system
+  - [x] 2.1 Create TOML configuration parser and data models
     - Implement SolrCoreConfig with id_field, date_field, and changefreq support
     - Add SitemapConfig and AppConfig dataclasses with TOML parsing
     - _Requirements: 1.1, 4.1, 4.4_
   
-  - [ ] 2.2 Add configuration validation logic
+  - [x] 2.2 Add configuration validation logic
     - Validate required fields, URL formats, and numeric ranges
     - Implement URL pattern validation with placeholder checking
     - _Requirements: 4.5, 1.1_
 
-- [ ] 3. Build Solr client with connection management
-  - [ ] 3.1 Implement async Solr HTTP client
+- [x] 3. Build Solr client with connection management
+  - [x] 3.1 Implement async Solr HTTP client
     - Create SolrClient class with httpx for async requests
     - Add methods for health checks and document counting
     - _Requirements: 3.1, 5.3_
   
-  - [ ] 3.2 Add batch document extraction functionality
+  - [x] 3.2 Add batch document extraction functionality
     - Implement paginated document fetching for ID and date fields with configurable batch sizes
     - Add SolrDocument dataclass for ID and last_modified data
     - Add error handling for network timeouts and HTTP errors

@@ -1,0 +1,30 @@
+[sitemap]
+output_dir = "./sitemaps-test"
+max_urls_per_file = 50000
+compress = true
+base_url = "https://katalog.review.arthistoricum.net"
+
+[processing]
+parallel_workers = 2
+log_level = "DEBUG"
+test_mode = true  # Limits processing to 10 documents per core
+
+[[cores]]
+name = "main_catalog"
+url = "http://sdvdmgtestsolr01.slub-dresden.de:8984/solr/ahn-release"
+id_field = "id"
+date_field = "last_indexed"
+url_pattern = "https://katalog.review.arthistoricum.net/id/{id}"
+changefreq = "weekly"
+batch_size = 5  # Small batch size for testing
+timeout = 30
+
+[[cores]]
+name = "archive_catalog"
+url = "http://sdvdmgtestsolr01.slub-dresden.de:8984/solr/ahn-images-test-1"
+id_field = "id"
+date_field = "last_indexed"
+url_pattern = "https://katalog.review.arthistoricum.net/id/{id}"
+changefreq = "monthly"
+batch_size = 5  # Small batch size for testing
+timeout = 30

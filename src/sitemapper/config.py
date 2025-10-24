@@ -79,10 +79,15 @@ class ConfigManager:
         processing_data = config_data.get("processing", {})
         parallel_workers = processing_data.get("parallel_workers", 4)
         log_level = processing_data.get("log_level", LogLevel.INFO)
+        test_mode = processing_data.get("test_mode", False)
         
         # Validate log level
         if log_level not in [level.value for level in LogLevel]:
             raise ConfigurationError(f"Invalid log level: {log_level}")
+        
+        # Validate test_mode
+        if not isinstance(test_mode, bool):
+            raise ConfigurationError(f"test_mode must be a boolean, got: {test_mode}")
         
         # Parse cores configuration
         cores_data = config_data.get("cores", [])
@@ -95,7 +100,8 @@ class ConfigManager:
             cores=cores,
             sitemap=sitemap_config,
             parallel_workers=parallel_workers,
-            log_level=log_level
+            log_level=log_level,
+            test_mode=test_mode
         )
     
     def _parse_sitemap_config(self, sitemap_data: Dict[str, Any]) -> SitemapConfig:
