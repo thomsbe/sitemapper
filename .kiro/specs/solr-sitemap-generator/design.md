@@ -55,7 +55,9 @@ class SolrCoreConfig:
     name: str
     url: str
     id_field: str
+    date_field: str
     url_pattern: str
+    changefreq: str = "weekly"
     batch_size: int = 1000
     timeout: int = 30
 
@@ -80,8 +82,13 @@ class AppConfig:
 class SolrClient:
     def __init__(self, base_url: str, timeout: int = 30)
     async def get_total_docs(self, id_field: str) -> int
-    async def fetch_ids_batch(self, id_field: str, start: int, rows: int) -> List[str]
+    async def fetch_docs_batch(self, id_field: str, date_field: str, start: int, rows: int) -> List[SolrDocument]
     async def health_check(self) -> bool
+
+@dataclass
+class SolrDocument:
+    id: str
+    last_modified: Optional[datetime]
 ```
 
 ### Processing Orchestrator (`orchestrator.py`)
@@ -99,7 +106,7 @@ class ProcessingOrchestrator:
 ```python
 class BatchProcessor:
     def __init__(self, solr_client: SolrClient, batch_size: int)
-    async def extract_all_ids(self, id_field: str, progress_callback: Callable) -> AsyncIterator[List[str]]
+    async def extract_all_documents(self, id_field: str, date_field: str, progress_callback: Callable) -> AsyncIterator[List[SolrDocument]]
     def _calculate_optimal_batch_size(self, total_docs: int) -> int
 ```
 
@@ -117,10 +124,16 @@ class URLBuilder:
 ```python
 class SitemapGenerator:
     def __init__(self, config: SitemapConfig, logger: Logger)
-    async def generate_sitemaps(self, urls: AsyncIterator[str], core_name: str) -> List[Path]
-    def _create_sitemap_xml(self, urls: List[str]) -> str
+    async def generate_sitemaps(self, sitemap_entries: AsyncIterator[SitemapEntry], core_name: str) -> List[Path]
+    def _create_sitemap_xml(self, entries: List[SitemapEntry]) -> str
     def _compress_file(self, file_path: Path) -> Path
     def _create_sitemap_index(self, sitemap_files: List[Path]) -> Path
+
+@dataclass
+class SitemapEntry:
+    url: str
+    last_modified: Optional[datetime]
+    changefreq: str
 ```
 
 ## Data Models
@@ -142,7 +155,9 @@ log_level = "INFO"
 name = "main_catalog"
 url = "http://solr1:8983/solr/catalog"
 id_field = "id"
+date_field = "last_indexed"
 url_pattern = "https://catalog.example.com/record/{id}"
+changefreq = "weekly"
 batch_size = 1000
 timeout = 30
 
@@ -150,7 +165,9 @@ timeout = 30
 name = "archive_catalog"
 url = "http://solr2:8983/solr/archive"
 id_field = "record_id"
+date_field = "modified_date"
 url_pattern = "https://archive.example.com/item/{id}"
+changefreq = "monthly"
 batch_size = 2000
 timeout = 45
 ```

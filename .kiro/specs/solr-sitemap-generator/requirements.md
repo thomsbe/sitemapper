@@ -10,7 +10,9 @@ The Solr Sitemap Generator is a CLI application that extracts document IDs from 
 - **Solr Core**: A Solr search index containing documents with unique IDs
 - **Document ID**: Unique identifier for a document stored in a Solr core, extracted from configurable ID field
 - **ID Field**: Configurable Solr field name containing the document identifiers
+- **Date Field**: Configurable Solr field name containing the last modification/indexing date
 - **URL Pattern**: Configurable template string for converting document IDs to full URLs
+- **Revisit Frequency**: Per-core configurable changefreq value for sitemap entries
 - **TOML Configuration**: Configuration file format using .toml extension for specifying cores, fields, and patterns
 - **Sitemap XML**: XML file format following the sitemaps.org protocol for search engines
 - **Split Sitemap**: Multiple sitemap files when document count exceeds single file limits, processed in parallel
@@ -28,10 +30,11 @@ The Solr Sitemap Generator is a CLI application that extracts document IDs from 
 #### Acceptance Criteria
 
 1. THE Sitemapper SHALL read configuration from a TOML file specifying Solr core URLs, ID field names, and URL patterns
-2. WHEN the Sitemapper processes each configured Solr core, THE Sitemapper SHALL extract all document IDs from the specified ID field
+2. WHEN the Sitemapper processes each configured Solr core, THE Sitemapper SHALL extract document IDs and last modification dates from the specified fields
 3. THE Sitemapper SHALL convert each document ID into a complete URL using the configured URL pattern template
-4. THE Sitemapper SHALL generate XML sitemap files conforming to the sitemaps.org protocol
-5. WHEN the total number of URLs exceeds 50,000, THE Sitemapper SHALL split the sitemap into multiple files with a sitemap index
+4. THE Sitemapper SHALL include last modification dates and changefreq values in generated sitemap entries
+5. THE Sitemapper SHALL generate XML sitemap files conforming to the sitemaps.org protocol with lastmod and changefreq elements
+6. WHEN the total number of URLs exceeds 50,000, THE Sitemapper SHALL split the sitemap into multiple files with a sitemap index
 
 ### Requirement 2
 
@@ -63,7 +66,7 @@ The Solr Sitemap Generator is a CLI application that extracts document IDs from 
 
 #### Acceptance Criteria
 
-1. THE Sitemapper SHALL read TOML configuration files containing Solr core definitions with URL, ID field, and URL pattern specifications
+1. THE Sitemapper SHALL read TOML configuration files containing Solr core definitions with URL, ID field, date field, URL pattern, and changefreq specifications
 2. THE Sitemapper SHALL allow specification of output directory for generated sitemap files in the TOML configuration
 3. THE Sitemapper SHALL support configuration file path specification via command-line parameters
 4. WHEN no configuration file is specified, THE Sitemapper SHALL look for a default 'sitemapper.toml' file in the current directory
