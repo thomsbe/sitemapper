@@ -1,0 +1,61 @@
+# Sitemapper Configuration Example
+# 
+# This is a comprehensive example configuration file for the Solr Sitemap Generator.
+# Copy this file to your desired location and modify the settings as needed.
+
+[sitemap]
+# Directory where sitemap files will be generated
+output_dir = "/var/www/html/sitemaps"
+
+# Maximum URLs per sitemap file (sitemap protocol limit is 50,000)
+max_urls_per_file = 50000
+
+# Whether to gzip compress the generated sitemap files
+compress = true
+
+# Base URL for your website (used in sitemap index files)
+base_url = "https://example.com"
+
+[processing]
+# Number of parallel workers for processing multiple cores
+# Adjust based on your system resources and Solr capacity
+parallel_workers = 4
+
+# Logging level (DEBUG, INFO, WARNING, ERROR)
+log_level = "INFO"
+
+# Test mode - if true, limits processing to 10 documents per core for testing
+test_mode = false
+
+# Example: Library catalog core
+[[cores]]
+name = "main_catalog"
+url = "http://solr.example.com:8983/solr/catalog"
+id_field = "id"
+date_field = "last_indexed"
+url_pattern = "https://catalog.example.com/record/{id}"
+changefreq = "weekly"
+batch_size = 1000
+timeout = 30
+
+# Example: Archive collection core
+[[cores]]
+name = "digital_archive"
+url = "http://solr.example.com:8983/solr/archive"
+id_field = "record_id"
+date_field = "modified_date"
+url_pattern = "https://archive.example.com/item/{id}"
+changefreq = "monthly"
+batch_size = 2000
+timeout = 45
+
+# Example: Special collections core with different settings
+[[cores]]
+name = "special_collections"
+url = "http://solr-special.example.com:8983/solr/special"
+id_field = "identifier"
+date_field = "updated"
+url_pattern = "https://special.example.com/collection/{id}"
+changefreq = "yearly"
+batch_size = 500
+timeout = 60

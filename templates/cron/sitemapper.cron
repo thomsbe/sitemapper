@@ -1,0 +1,28 @@
+# Solr Sitemap Generator Cron Configuration
+# 
+# This file contains example cron entries for running the sitemapper
+# at various intervals. Choose the appropriate schedule for your needs.
+#
+# To install:
+# 1. Copy this file to /etc/cron.d/sitemapper
+# 2. Adjust paths and schedule as needed
+# 3. Ensure the sitemapper user exists and has appropriate permissions
+#
+# Log files will be written to /var/log/sitemapper/ by default
+
+# Set environment variables
+PATH=/usr/local/bin:/usr/bin:/bin
+SHELL=/bin/bash
+MAILTO=admin@example.com
+
+# Daily sitemap generation at 2:00 AM
+0 2 * * * sitemapper /usr/local/bin/uvx sitemapper --config /etc/sitemapper/config.toml --log-file /var/log/sitemapper/daily.log 2>&1
+
+# Weekly sitemap generation (alternative - runs Sundays at 3:00 AM)
+# 0 3 * * 0 sitemapper /usr/local/bin/uvx sitemapper --config /etc/sitemapper/config.toml --log-file /var/log/sitemapper/weekly.log 2>&1
+
+# Hourly sitemap generation for high-frequency updates (use with caution)
+# 0 * * * * sitemapper /usr/local/bin/uvx sitemapper --config /etc/sitemapper/config.toml --log-file /var/log/sitemapper/hourly.log 2>&1
+
+# Configuration validation (dry run) - runs every 6 hours to check config health
+0 */6 * * * sitemapper /usr/local/bin/uvx sitemapper --config /etc/sitemapper/config.toml --dry-run --log-file /var/log/sitemapper/validation.log 2>&1

@@ -161,7 +161,7 @@ class ProcessingResult:
 
 
 # Type aliases for better readability
-ProgressCallback = Callable[[int, int], None]
+ProgressCallback = Callable[[int, Optional[int], str], None]
 DocumentIterator = AsyncIterator[List[SolrDocument]]
 SitemapEntryIterator = AsyncIterator[SitemapEntry]
 ConfigDict = Dict[str, Any]

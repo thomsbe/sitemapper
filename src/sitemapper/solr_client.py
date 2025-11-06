@@ -13,6 +13,7 @@ from datetime import datetime
 
 from .types import SolrDocument
 from .exceptions import SolrConnectionError
+from .circuit_breaker import CircuitBreaker, CircuitBreakerConfig
 
 
 class SolrClient:
@@ -23,7 +24,7 @@ class SolrClient:
     document extraction from Solr cores.
     """
     
-    def __init__(self, base_url: str, timeout: int = 30, test_mode: bool = False) -> None:
+    def __init__(self, base_url: str, timeout: int = 30, test_mode: bool = False, circuit_breaker: Optional[CircuitBreaker] = None) -> None:
         """
         Initialize the Solr client.
         
@@ -31,11 +32,13 @@ class SolrClient:
             base_url: Base URL of the Solr core
             timeout: Request timeout in seconds
             test_mode: If True, limits document processing to 10 docs per core for testing
+            circuit_breaker: Optional circuit breaker for resilient error handling
         """
         self.base_url = base_url.rstrip('/')
         self.timeout = timeout
         self.test_mode = test_mode
         self._client: Optional[httpx.AsyncClient] = None
+        self.circuit_breaker = circuit_breaker
     
     async def _get_client(self) -> httpx.AsyncClient:
         """Get or create the HTTP client instance."""
@@ -60,24 +63,31 @@ class SolrClient:
         Raises:
             SolrConnectionError: If request fails or returns invalid response
         """
-        client = await self._get_client()
-        url = urljoin(f"{self.base_url}/", endpoint)
-        
-        try:
-            response = await client.get(url, params=params)
-            response.raise_for_status()
+        async def _do_request() -> Dict[str, Any]:
+            client = await self._get_client()
+            url = urljoin(f"{self.base_url}/", endpoint)
             
             try:
-                return response.json()
-            except json.JSONDecodeError as e:
-                raise SolrConnectionError(f"Invalid JSON response from Solr: {e}")
+                response = await client.get(url, params=params)
+                response.raise_for_status()
                 
-        except httpx.TimeoutException:
-            raise SolrConnectionError(f"Timeout connecting to Solr at {url}")
-        except httpx.HTTPStatusError as e:
-            raise SolrConnectionError(f"HTTP error {e.response.status_code} from Solr: {e.response.text}")
-        except httpx.RequestError as e:
-            raise SolrConnectionError(f"Network error connecting to Solr: {e}")
+                try:
+                    return response.json()
+                except json.JSONDecodeError as e:
+                    raise SolrConnectionError(f"Invalid JSON response from Solr: {e}")
+                    
+            except httpx.TimeoutException:
+                raise SolrConnectionError(f"Timeout connecting to Solr at {url}")
+            except httpx.HTTPStatusError as e:
+                raise SolrConnectionError(f"HTTP error {e.response.status_code} from Solr: {e.response.text}")
+            except httpx.RequestError as e:
+                raise SolrConnectionError(f"Network error connecting to Solr: {e}")
+        
+        # Use circuit breaker if available
+        if self.circuit_breaker:
+            return await self.circuit_breaker.call(_do_request)
+        else:
+            return await _do_request()
     
     async def close(self) -> None:
         """Close the HTTP client connection."""
