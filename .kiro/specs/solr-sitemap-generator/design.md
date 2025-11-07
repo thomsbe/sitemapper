@@ -67,6 +67,7 @@ class SitemapConfig:
     max_urls_per_file: int = 50000
     compress: bool = True
     base_url: str
+    output_name: str = "sitemap.xml"  # Global sitemap index filename
 
 @dataclass
 class AppConfig:
@@ -125,9 +126,10 @@ class URLBuilder:
 class SitemapGenerator:
     def __init__(self, config: SitemapConfig, logger: Logger)
     async def generate_sitemaps(self, sitemap_entries: AsyncIterator[SitemapEntry], core_name: str) -> List[Path]
+    async def create_global_sitemap_index(self, sitemap_files: List[Path]) -> Path
     def _create_sitemap_xml(self, entries: List[SitemapEntry]) -> str
     def _compress_file(self, file_path: Path) -> Path
-    def _create_sitemap_index(self, sitemap_files: List[Path]) -> Path
+    def _create_sitemap_index(self, sitemap_files: List[Path], core_name: str, is_global: bool) -> Path
 
 @dataclass
 class SitemapEntry:
@@ -135,6 +137,8 @@ class SitemapEntry:
     last_modified: Optional[datetime]
     changefreq: str
 ```
+
+**Global Sitemap Index**: After processing all cores, the orchestrator creates a single global sitemap index file (default: `sitemap.xml`) that references all sitemap files from all cores. This provides a single entry point for search engines to discover all catalog entries across multiple Solr cores.
 
 ## Data Models
 
@@ -146,6 +150,7 @@ output_dir = "./sitemaps"
 max_urls_per_file = 50000
 compress = true
 base_url = "https://example.com"
+output_name = "sitemap.xml"  # Global sitemap index filename (optional, default: sitemap.xml)
 
 [processing]
 parallel_workers = 4

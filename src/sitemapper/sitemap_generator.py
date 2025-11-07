@@ -259,18 +259,42 @@ class SitemapGenerator:
         
         return compressed_path
     
-    async def _create_sitemap_index(self, sitemap_files: List[Path], core_name: str) -> Path:
+    async def create_global_sitemap_index(self, sitemap_files: List[Path]) -> Path:
+        """
+        Create a global sitemap index file referencing all sitemap files from all cores.
+        
+        This is a public method to create the main sitemap index that references all generated sitemaps.
+        Uses the configured output_name from SitemapConfig.
+        
+        Args:
+            sitemap_files: List of all sitemap file paths from all cores
+            
+        Returns:
+            Path to the created global sitemap index file
+        """
+        # Use the configured output name (e.g., "sitemap.xml" or "sitemap_docs.xml")
+        # Remove .xml extension if present, as _create_sitemap_index will add it
+        base_name = self.config.output_name.replace('.xml', '').replace('.gz', '')
+        return await self._create_sitemap_index(sitemap_files, base_name, is_global=True)
+    
+    async def _create_sitemap_index(self, sitemap_files: List[Path], core_name: str, is_global: bool = False) -> Path:
         """
         Create a sitemap index file referencing multiple sitemap files.
         
         Args:
             sitemap_files: List of sitemap file paths
             core_name: Name of the core (used for filename)
+            is_global: If True, this is the global index for all cores
             
         Returns:
             Path to the created sitemap index file
         """
-        index_filename = f"sitemap_index_{core_name}.xml"
+        # For global sitemap, use configured output name
+        if is_global:
+            index_filename = f"{core_name}.xml"
+        else:
+            index_filename = f"sitemap_index_{core_name}.xml"
+        
         index_path = self.output_dir / index_filename
         
         # Create root element with namespace

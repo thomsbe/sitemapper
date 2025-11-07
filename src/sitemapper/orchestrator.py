@@ -127,6 +127,9 @@ class ProcessingOrchestrator:
             total_time = time.time() - start_time
             processing_result = self._calculate_overall_result(processed_results, total_time)
             
+            # Create global sitemap index that includes all cores
+            await self._create_global_sitemap_index(processed_results)
+            
             # Generate and log comprehensive summary report
             summary_report = self.progress_tracker.generate_summary_report(processing_result)
             formatted_report = ReportGenerator.format_summary_report(summary_report)
@@ -606,6 +609,40 @@ class ProcessingOrchestrator:
                     "Connection error detected - core may be down",
                     core_name=core_name
                 )
+    
+    async def _create_global_sitemap_index(self, core_results: List[CoreResult]) -> None:
+        """
+        Create a global sitemap index that references all sitemap files from all cores.
+        
+        Args:
+            core_results: Results from processing individual cores
+        """
+        # Collect all sitemap files from all cores
+        all_sitemap_files = []
+        for result in core_results:
+            all_sitemap_files.extend(result.sitemap_files)
+        
+        if not all_sitemap_files:
+            self.logger.warning("No sitemap files generated, skipping global index creation")
+            return
+        
+        # Create global sitemap index using configured output name
+        try:
+            index_path = await self.sitemap_generator.create_global_sitemap_index(
+                all_sitemap_files
+            )
+            
+            self.logger.info(
+                "Global sitemap index created",
+                index_file=index_path.name,
+                total_sitemaps=len(all_sitemap_files),
+                cores_count=len(core_results)
+            )
+        except Exception as e:
+            self.logger.error(
+                "Failed to create global sitemap index",
+                error=str(e)
+            )
     
     def _calculate_overall_result(
         self, 

@@ -35,6 +35,8 @@ The Solr Sitemap Generator is a CLI application that extracts document IDs from 
 4. THE Sitemapper SHALL include last modification dates and changefreq values in generated sitemap entries
 5. THE Sitemapper SHALL generate XML sitemap files conforming to the sitemaps.org protocol with lastmod and changefreq elements
 6. WHEN the total number of URLs exceeds 50,000, THE Sitemapper SHALL split the sitemap into multiple files with a sitemap index
+7. THE Sitemapper SHALL generate a global sitemap index file that references all sitemap files from all configured cores
+8. THE Sitemapper SHALL use the configured output_name parameter for the global sitemap index filename with a default value of "sitemap.xml"
 
 ### Requirement 2
 
@@ -68,9 +70,10 @@ The Solr Sitemap Generator is a CLI application that extracts document IDs from 
 
 1. THE Sitemapper SHALL read TOML configuration files containing Solr core definitions with URL, ID field, date field, URL pattern, and changefreq specifications
 2. THE Sitemapper SHALL allow specification of output directory for generated sitemap files in the TOML configuration
-3. THE Sitemapper SHALL support configuration file path specification via command-line parameters
-4. WHEN no configuration file is specified, THE Sitemapper SHALL look for a default 'sitemapper.toml' file in the current directory
-5. THE Sitemapper SHALL validate all TOML configuration parameters before beginning processing
+3. THE Sitemapper SHALL allow specification of the global sitemap index filename via the output_name parameter in the TOML configuration
+4. THE Sitemapper SHALL support configuration file path specification via command-line parameters
+5. WHEN no configuration file is specified, THE Sitemapper SHALL look for a default 'sitemapper.toml' file in the current directory
+6. THE Sitemapper SHALL validate all TOML configuration parameters before beginning processing
 
 ### Requirement 5
 

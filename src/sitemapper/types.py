@@ -94,11 +94,13 @@ class SitemapConfig:
         max_urls_per_file: Maximum URLs per sitemap file before splitting
         compress: Whether to gzip compress the generated files
         base_url: Base URL for the website (used for sitemap index)
+        output_name: Name for the global sitemap index file (default: sitemap.xml)
     """
     output_dir: str
     max_urls_per_file: int = 50000
     compress: bool = True
     base_url: str = ""
+    output_name: str = "sitemap.xml"
 
 
 @dataclass

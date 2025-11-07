@@ -187,13 +187,21 @@ class SolrClient:
             # Limit rows to not exceed the 10 document limit
             rows = min(rows, 10 - start)
         
+        # Build field list - only request fields we actually need
+        # If date_field is empty or None, only request ID field for better performance
+        if date_field and date_field.strip():
+            field_list = f"{id_field},{date_field}"
+        else:
+            field_list = id_field
+        
         params = {
             "q": f"{id_field}:*",  # Query for all documents with the ID field
-            "fl": f"{id_field},{date_field}",  # Only return ID and date fields
+            "fl": field_list,  # Only return necessary fields
             "start": start,
             "rows": rows,
             "wt": "json",
-            "sort": f"{id_field} asc"  # Consistent ordering for pagination
+            "sort": f"{id_field} asc",  # Consistent ordering for pagination
+            "omitHeader": "true"  # Skip response header for smaller payload
         }
         
         try:

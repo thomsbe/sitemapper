@@ -1,4 +1,5 @@
 [sitemap]
+output_name = "sitemap_docs.xml"
 output_dir = "./sitemaps"
 max_urls_per_file = 50000
 compress = true
@@ -9,21 +10,31 @@ parallel_workers = 4
 log_level = "INFO"
 
 [[cores]]
-name = "main_catalog"
+name = "text"
 url = "http://sdvdmgtestsolr01.slub-dresden.de:8984/solr/ahn-release"
 id_field = "id"
 date_field = "last_indexed"
 url_pattern = "https://katalog.review.arthistoricum.net/id/{id}"
-changefreq = "weekly"
-batch_size = 1000
+changefreq = "monthly"
+batch_size = 5000
 timeout = 30
 
 [[cores]]
-name = "archive_catalog"
+name = "image"
 url = "http://sdvdmgtestsolr01.slub-dresden.de:8984/solr/ahn-images-test-1"
 id_field = "id"
 date_field = "last_indexed"
 url_pattern = "https://katalog.review.arthistoricum.net/id/{id}"
 changefreq = "monthly"
-batch_size = 2000
+batch_size = 5000
+timeout = 30
+
+[[cores]]
+name = "event"
+url = "http://sdvdmgtestsolr01.slub-dresden.de:8984/solr/ahn-event"
+id_field = "id"
+date_field = "last_indexed"
+url_pattern = "https://katalog.review.arthistoricum.net/id/{id}"
+changefreq = "monthly"
+batch_size = 5000
 timeout = 30
